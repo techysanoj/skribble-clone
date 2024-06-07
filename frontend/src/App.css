@@ -1,0 +1,112 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: url('/Users/priyanshubhardwaj/Downloads/WhatsApp Image 2024-06-07 at 17.00.51.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .app {
+    text-align: center;
+    position: relative;
+  }
+  
+  .app-header {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  
+  .main-container {
+    
+    background-color: rgba(0, 0, 0, 0.5);
+    
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    width: 300px;
+    margin: auto;
+  }
+  
+  .input-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+  
+  .input {
+    width: 48%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+  }
+  
+  .avatar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+  
+  .arrow-button {
+    background-color: rgba(30, 30, 75, 0.8);
+    border: none;
+    color: white;
+    font-size: 2em;
+    cursor: pointer;
+  }
+  
+  .avatar {
+    width: 50px;
+    height: 50px;
+    margin: 0 15px;
+  }
+  
+  .room-code-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 15px;
+  }
+  
+  .play-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+  }
+  
+  .play-button:hover {
+    background-color: #218838;
+  }
+  
+  .icon-container {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .icon {
+    color: white;
+    font-size: 2em;
+    margin: 10px 0;
+    cursor: pointer;
+  }
+  
+  .icon:hover {
+    color: #ccc;
+  }
+  
