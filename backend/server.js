@@ -40,8 +40,8 @@ io.on("connection", (socket) => {
 
   socket.on("sending", (data) => {
     // console.log("msg recievd",data)
-    console.log("data recieved");
-    socket.broadcast.emit("recieving", data);
+    console.log("data received");
+    socket.broadcast.emit("receiving", data);
   });
 
   socket.on("sending-chat", (inputMessage) => {
@@ -52,7 +52,7 @@ io.on("connection", (socket) => {
     if (inputMessage === word) {
       console.log("right guess");
       rightGuess=true;
-      chats.push(`${userID} guessed the right word`)
+      chats.push(`${userID} Guessed the right word`)
       // io.to(userID).emit("right-guess")
     }
     else{
