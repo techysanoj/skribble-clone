@@ -20,8 +20,22 @@ body {
   }
   
   .app-header {
-    font-size: 2.5em;
+    font-family: 'Architects Daughter';
+    text-shadow:
+      0 0 7px #fff,
+      0 0 10px #fff,
+      0 0 21px #fff,
+      0 0 42px #01A7F1,
+      0 0 82px #01A7F1,
+      0 0 92px #01A7F1,
+      0 0 102px #01A7F1,
+      0 0 151px #01A7F1;
+    font-size:5rem;
+    justify-content: center;
     margin-bottom: 20px;
+    align-items: center;
+    margin-top: -70px;
+    -webkit-text-stroke: 2px black; /* Width and color of the stroke */
   }
   
   .main-container {
@@ -29,7 +43,7 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    width: 300px;
+    width: 400px;
     margin: auto;
   }
   
@@ -56,7 +70,7 @@ body {
   }
   
   .arrow-button {
-    background-color: rgba(30, 30, 75, 0.8);
+
     border: none;
     color: white;
     font-size: 2em;

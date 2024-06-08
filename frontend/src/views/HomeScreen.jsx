@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import "../App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -6,6 +6,7 @@ import {
   faEnvelope,
   faQuestionCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import AvatarChanger from "../components/AvatarChanger";
 
 
 function HomeScreen() {
@@ -27,7 +28,8 @@ function HomeScreen() {
         </div>
         <div className="avatar-container">
           <button className="arrow-button">←</button>
-          <img src="avatar-2.png" alt="Avatar" className="avatar" ></img>
+          <img src="avatar.svg" alt="Avatar" className="avatar"></img>
+          {/* <AvatarChanger/> */}
           <button className="arrow-button">→</button>
         </div>
         <input
@@ -43,7 +45,7 @@ function HomeScreen() {
         <FontAwesomeIcon icon={faQuestionCircle} className="icon" />
       </div>
     </div>
-  )
+  );
 }
 
-export default HomeScreen
+export default HomeScreen;
