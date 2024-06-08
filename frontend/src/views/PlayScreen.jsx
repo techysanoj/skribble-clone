@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import { Buffer } from "buffer";
+import PlayerCard from "../components/PlayerCard";
 
 function PlayScreen() {
   const canvasRef = useRef(null);
@@ -10,9 +11,11 @@ function PlayScreen() {
   const [allChats, setAllChats] = useState([]);
   const [allPlayers, setAllPlayer] = useState([]);
   const [socket, setSocket] = useState(null);
+  const [currentUserDrawing, setCurrentUserDrawing] = useState(false)
+  const [gameStarted, setgameStarted] = useState(false)
   useEffect(() => {
     const newSocket = io.connect("http://localhost:3001");
-    console.log(newSocket);
+    // console.log(newSocket);
     setSocket(newSocket);
     // newSocket.emit("player-joined",newSocket.id)
     // return()=>{
@@ -23,7 +26,7 @@ function PlayScreen() {
   useEffect(() => {
     if (socket) {
       socket.on("updated-players", (updatedplayers) => {
-        console.log(updatedplayers);
+        console.log("updated Players", updatedplayers);
         setAllPlayer(updatedplayers);
       });
     }
@@ -34,8 +37,9 @@ function PlayScreen() {
       //  socket.on("drawing", ({ x0, y0, x1, y1, color })=>{
       //   // drawLine(context, x0, y0, x1, y1, color, false);
       //  })
-      socket.on("recieving", async (data) => {
+      socket.on("receiving", async (data) => {
         //   console.log(data)
+        // console.log("data recieved in frontend")
 
         //   const offsetX=data.x
         //   const offsetY=data.y
@@ -85,6 +89,51 @@ function PlayScreen() {
     setContext(ctx);
   }, []);
 
+  useEffect(()=>{
+    if(socket){
+    socket.on("game-start",()=>{
+      console.log("game started")
+      setgameStarted(true)
+    })
+  }
+  },[socket])
+
+  useEffect(()=>{
+    if(socket){
+    socket.on("game-stop",()=>{
+      console.log("game stopped")
+      setgameStarted(false)
+      setCurrentUserDrawing(false)
+
+    })
+  }
+  },[socket])
+
+
+  useEffect(()=>{
+    if(socket){
+    socket.on("start-turn",(playerID)=>{
+      console.log("turn started of", playerID)
+      if(playerID===socket.id){
+        console.log("your turn started")
+        setCurrentUserDrawing(true)
+      }
+    })
+  }
+  },[socket])
+
+  useEffect(()=>{
+    if(socket){
+    socket.on("end-turn",(playerID)=>{
+      console.log("turn ended of", playerID)
+      if(socket.id===playerID){
+        console.log("your turn ended!")
+        setCurrentUserDrawing(false)
+      }
+    })
+  }
+  },[socket])
+
   useEffect(() => {
     if (socket) {
       socket.on("recieve-chat", ({ msg, userID, rightGuess }) => {
@@ -94,9 +143,9 @@ function PlayScreen() {
           // one option that can be further explored is that push the messages in efrontend withut sending all chats from the backend
           if (userID === socket.id) {
             // chats.pop();
-            setAllChats(prevchats=>[{sender: "you", message:"you guessed the right word!"}, ...prevchats]);
+            setAllChats(prevchats=>[{sender: "you", message:`you guessed the right word! (${msg})`, rightGuess}, ...prevchats]);
           }else{
-            setAllChats(prevchats=>[{sender:userID, message:`guessed the word right!`}, ...prevchats])
+            setAllChats(prevchats=>[{sender:userID, message:`${userID} guessed the word right!`, rightGuess}, ...prevchats])
 
           }
         }else{
@@ -111,11 +160,11 @@ function PlayScreen() {
             // newChats.push(newChat)
             // console.log(newChats)
             // setAllChats(newChats)
-            setAllChats(prevchats=>[{sender: "you", message: msg}, ...prevchats])
+            setAllChats(prevchats=>[{sender: "you", message: msg, rightGuess}, ...prevchats])
 
           }else{
 
-            setAllChats(prevchats=>[ {sender: userID, message: msg},...prevchats])
+            setAllChats(prevchats=>[ {sender: userID, message: msg, rightGuess},...prevchats])
           }
         }
         // setAllChats(chats.reverse());
@@ -193,7 +242,12 @@ function PlayScreen() {
     // <div>PlayScreen</div>
     <div className=" relative w-screen h-screen ">
       <div className="w-full h-full   flex justify-center items-center gap-10">
-        <div className=" w-[300px] h-[540px] border border-black"></div>
+        <div className=" w-[300px] h-[540px] border border-black bg-white text-black  ">
+          {allPlayers && allPlayers.map((pl,idx)=>(
+            // <p key={idx}>{pl}</p>
+            <PlayerCard key={idx} pl={pl} curruser={pl===socket.id} currentUserDrawing={currentUserDrawing}/>
+          ))}
+        </div>
         <div className="w-[680px] h-[540px] bg-yellow-50">
           <canvas
             ref={canvasRef}
@@ -217,13 +271,14 @@ function PlayScreen() {
             <input
               value={inputMessage}
               placeholder="Type your guess here"
-              className="min-w-full active max-w-full flex flex-wrap px-6 py-2 rounded-lg font-medium bg-sky-50  bg-opacity-40 border border-blue-300 placeholder-gray-400 text-md focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-1 focus:shadow-[0_0px_10px_5px_#bfdbfe]"
+              className="min-w-full active max-w-full text-black flex flex-wrap px-6 py-2 rounded-lg font-medium bg-sky-50  bg-opacity-40 border border-blue-300 placeholder-gray-400 text-md focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-0 focus:shadow-[0_0px_10px_2px_#bfdbfe]"
               onChange={(e) => handleChangeText(e)}
             ></input>
           </form>
 
-          {allChats && allChats.length>0 && allChats.map((chat, idx) => <p key={idx}>{
-          `${chat.sender}: ${chat.message}`
+          {allChats && allChats.length>0 && allChats.map((chat, idx) => <p className={`${chat.rightGuess?"bg-green-200 text-green-600":""}`} key={idx}>{
+            `${chat.rightGuess?chat.message:`${chat.sender}: ${chat.message}`}`
+          // `${chat.sender}: ${chat.message}`
         // chat
           }</p>)}
         </div>

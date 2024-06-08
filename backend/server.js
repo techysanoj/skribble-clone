@@ -3,6 +3,7 @@ const cors = require("cors");
 const app = express();
 const http = require("http");
 const { Server } = require("socket.io");
+const { time } = require("console");
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -19,6 +20,49 @@ const port = 3001;
 const chats = [];
 const players = [];
 const word = "car";
+let drawerindex = 0;
+let timeout;
+let round=0;
+
+
+const startGame=()=>{
+  console.log("game started")
+  io.emit("game-start",{})
+  startTurn()
+  
+}
+
+const stopGame=()=>{
+  console.log("game stopped")
+
+  io.emit("game-stop",{})
+  drawerindex=0
+  if(timeout){
+    clearInterval(timeout)
+  }
+}
+
+const startTurn=()=>{
+  if(drawerindex>=players.length){
+    drawerindex=0
+  }
+  //notify frontend for starting turn with this user
+  io.emit("start-turn",players[drawerindex])
+  //word genrator
+  timeout = setTimeout(()=>{
+    endTurn()
+  }, 10000)
+
+}
+
+const endTurn=()=>{
+  io.emit("end-turn", players[drawerindex])
+  clearInterval(timeout)
+  //notify turn ended for this user
+  drawerindex=(drawerindex+1)%players.length
+  //points logic
+  startTurn(drawerindex)
+}
 
 app.use(cors());
 app.use(express.json());
@@ -37,6 +81,9 @@ io.on("connection", (socket) => {
   players.push(socket.id);
   io.emit("updated-players", players);
   // })
+  if(players.length==2){
+    startGame()
+  }
 
   socket.on("sending", (data) => {
     // console.log("msg recievd",data)
@@ -77,6 +124,10 @@ io.on("connection", (socket) => {
       players.splice(index, 1); // 2nd parameter means remove one item only
     }
     io.emit("updated-players", players);
+    if(players.length<=1){
+      stopGame()
+    }
+
   });
 });
 
