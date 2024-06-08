@@ -1,12 +1,7 @@
 import React from "react";
 import "../App.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHome,
-  faEnvelope,
-  faQuestionCircle,
-} from "@fortawesome/free-solid-svg-icons";
 import AvatarChanger from "../components/AvatarChanger";
+import Footer from "../components/Footer";
 
 
 function HomeScreen() {
@@ -39,11 +34,7 @@ function HomeScreen() {
         />
         <button className="play-button">Play !</button>
       </div>
-      <div className="icon-container">
-        <FontAwesomeIcon icon={faHome} className="icon" />
-        <FontAwesomeIcon icon={faEnvelope} className="icon" />
-        <FontAwesomeIcon icon={faQuestionCircle} className="icon" />
-      </div>
+      <Footer/>
     </div>
   );
 }
