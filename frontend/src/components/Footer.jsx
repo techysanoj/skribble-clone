@@ -19,7 +19,7 @@ const Footer = () => {
       setTimeout(() => {
         setSelectedIcon(null);
         setAnimation('');
-      }, 500); // Duration of the fade-out animation
+      }, 0); // Duration of the fade-out animation
     };
 
   return (
