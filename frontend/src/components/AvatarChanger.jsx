@@ -1,24 +1,50 @@
 import React, { useState } from 'react';
+import './AvatarChanger.css'
+import { createAvatar } from '@dicebear/core';
+import { openPeeps, adventurer, avataaars, bigEars, bigSmile,
+    bottts, croodles, funEmoji, lorelei, loreleiNeutral, micah,
+    miniavs, notionists, personas, 
+ } from '@dicebear/collection';
 
-const AvatarChanger = () => {
-    const [avatarUrl, setAvatarUrl] = useState('');
+function AvatarChanger() {
+  const [avatar, setAvatar] = useState(() => generateAvatar()); // Initialize avatar state with a default value
 
-    const fetchNewAvatar = () => {
-        const seed = Math.random().toString(36).substring(7);
-        const newAvatarUrl = `https://avatars.dicebear.com/api/open-peeps/${seed}.svg`;
-        setAvatarUrl(newAvatarUrl);
-    };
+  const changeAvatar = () => {
+    setAvatar(generateAvatar()); // Generate a new avatar when the button is clicked
+  };
 
-    return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <div>
-                {avatarUrl && (
-                    <img src={avatarUrl} alt="Avatar" style={{ width: '200px', height: '200px' }} />
-                )}
-            </div>
-            <button onClick={fetchNewAvatar} style={{ marginTop: '20px' }}>Next Avatar</button>
+  // Function to generate a random avatar from the available collections
+  function generateAvatar() {
+    // Define an array of collections
+    const collections = [
+      openPeeps, adventurer, avataaars, bigEars, bigSmile,
+      bottts, croodles, funEmoji, lorelei, loreleiNeutral, micah,
+      miniavs, notionists, personas
+    ];
+
+    // Randomly select a collection
+    const selectedCollection = collections[Math.floor(Math.random() * collections.length)];
+
+    // Use createAvatar to generate an avatar with the selected collection and desired options
+    const avatarSvg = createAvatar(selectedCollection, {
+      seed: Math.random().toString(), // Use a random seed to generate different avatars each time
+      size: 128,
+    });
+
+    // Convert the SVG to a Base64 string using encodeURIComponent
+    const base64String = btoa(unescape(encodeURIComponent(avatarSvg)));
+
+    // Combine the Base64 string with the data URI prefix
+    return `data:image/svg+xml;base64,${base64String}`;
+  }
+
+  return (
+        <div className="avatar-container">
+          <button className="arrow-button-changer" onClick={changeAvatar}>←</button>
+          <img src={avatar} alt="Avatar" className='avatar-img'/>
+          <button className="arrow-button-changer" onClick={changeAvatar}>→</button>
         </div>
-    );
-};
+  );
+}
 
 export default AvatarChanger;

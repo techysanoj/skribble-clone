@@ -21,12 +21,7 @@ function HomeScreen() {
             <option value="it">Italian</option>
           </select>
         </div>
-        <div className="avatar-container">
-          <button className="arrow-button">←</button>
-          <img src="avatar.svg" alt="Avatar" className="avatar"></img>
-          {/* <AvatarChanger/> */}
-          <button className="arrow-button">→</button>
-        </div>
+        <AvatarChanger/>
         <input
           type="text"
           placeholder="Enter room code Here"

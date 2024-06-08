@@ -1,0 +1,11 @@
+.avatar-img{
+    height: 170px;
+    width: 170px;
+    margin: 10px;
+}
+
+.arrow-button-changer{
+    font-size: 3.2rem;
+    color: yellow;
+    margin: 10px;
+}
