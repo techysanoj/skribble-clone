@@ -1,5 +1,5 @@
 import React from 'react';
-import './Home.css';
+import './News.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faEnvelopeOpen, faHome, faXmark } from '@fortawesome/free-solid-svg-icons';
 

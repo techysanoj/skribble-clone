@@ -1,0 +1,45 @@
+.empty {
+    opacity: 0;
+}
+
+.home-header{
+    display: flex;
+    justify-content: start;
+}
+
+#icon-cross{
+    height: 35px;
+    width: 35px;
+    font-size: 2rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    margin: 8px;
+    margin-left: 80px;
+}
+
+#icon-cross:hover{
+    color: red;
+}
+
+.home-h1{
+    font-size: 2.1rem;
+    margin-left: 30px;
+}
+
+.main-container-home{
+    opacity: 0.8;
+    position: absolute;
+    top: 150px;
+    right: 5rem;
+    padding: 20px;
+    height: 500px;
+    width: 400px;
+    background-color: black;
+    border-radius: 40px 10px 10px 40px;
+}
+
+.paragraph-home{
+    font-size: 20px;
+    margin-top: 20px;
+}
