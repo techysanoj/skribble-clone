@@ -34,7 +34,7 @@ function HomeScreen() {
         />
         <button className="play-button">Play !</button>
       </div>
-      <Footer/>
+      <Footer className="footer-icon"/>
     </div>
   );
 }

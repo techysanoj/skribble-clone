@@ -97,7 +97,6 @@ body {
     color: white;
     background-color: #EE5690;
     border-radius: 40px;
-    
   }
 
   .room-code-input::placeholder {
@@ -155,5 +154,10 @@ body {
   
   .icon :hover {
     color: yellow;
+  }
+
+  .footer-icon{
+    display: flex;
+    flex-direction: column-reverse;
   }
   
