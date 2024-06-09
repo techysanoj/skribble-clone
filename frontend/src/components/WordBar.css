@@ -1,0 +1,79 @@
+.clock {
+    position: relative;
+    width: 80px; /* Adjust based on the size of your CountdownCircleTimer */
+    height: 80px; /* Adjust based on the size of your CountdownCircleTimer */
+    border-radius: 50%;
+    overflow: hidden; /* Ensure anything outside the circle is hidden */
+    background-color: grey; /* Set the background color to grey */
+  }
+  
+  .hand {
+    position: absolute;
+    width: 50%; /* Adjusted to ensure it stays within the circle */
+    height: 2px;
+    background-color: black;
+    transform-origin: 0 50%; /* Shift the fulcrum to the center */
+    top: 50%;
+    left: 50%;
+    transform: rotate(0deg);
+    z-index: 1; /* Set a lower z-index than the timer text */
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+  
+  .timer-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px; /* Set a larger font size */
+    font-weight: bold; /* Make the font bolder */
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5); /* Add a 3D shadow effect */
+    color: white; /* Set text color to white */
+    background-color: grey; /* Dark blue background color */
+    border-radius: 50%; /* Make it circular */
+    padding: 2px; /* Add some padding */
+    z-index: 2; /* Set a higher z-index */
+  }
+  
+  
+  .hand.minute-hand {
+    z-index: 1; /* Set a lower z-index than the timer text */
+  }
+  
+  .second-hand {
+    height: 1px;
+    background-color: red;
+  }
+  
+  .minute-hand {
+    height: 2px;
+  }
+  
+  .hour-hand {
+    height: 0px;
+  }
+  
+  .center-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: black;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .timer-button:hover {
+    animation: jiggle 0.3s infinite;
+  }
+  
+  @keyframes jiggle {
+    0%, 100% {
+      transform: rotate(-3deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+  
