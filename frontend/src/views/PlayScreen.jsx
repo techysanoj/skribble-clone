@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { Buffer } from "buffer";
 import PlayerCard from "../components/PlayerCard";
 import WordBar from "../components/WordBar";
+import { wordsArray, getWordsArrayLength } from "../components/Words";
 
 function PlayScreen() {
   const canvasRef = useRef(null);
@@ -20,6 +21,7 @@ function PlayScreen() {
   const [selectedWord, setSelectedWord] = useState(null)
   const [showClock, setShowClock] = useState(false)
   const [wordLen, setWordLen] = useState(0)
+  const [guessedWord, setGuessedWord] = useState(false)
   useEffect(() => {
     const newSocket = io.connect("http://localhost:3001");
     // console.log(newSocket);
@@ -131,8 +133,12 @@ function PlayScreen() {
     if(socket){
       socket.on("start-turn",(player)=>{
         console.log("turn started of", player)
+        setGuessedWord(false)
         clearCanvas()
         setPlayerDrawing(player)
+        //getwiords function call
+        let newRandomWords = getRandomWords()
+        setWords(newRandomWords)
         setShowWords(true)
 
 
@@ -169,8 +175,18 @@ function PlayScreen() {
 
   useEffect(()=>{
     if(socket){
+      socket.on("all-guessed-correct",()=>{
+        console.log("all players guessed the word correct, end the timer")
+      })
+    }
+
+  },[socket])
+
+  useEffect(()=>{
+    if(socket){
     socket.on("end-turn",(player)=>{
       console.log("turn ended of", player)
+      setGuessedWord(false)
       setPlayerDrawing(null)
       setShowClock(false)
       setSelectedWord(null)
@@ -192,6 +208,7 @@ function PlayScreen() {
           // one option that can be further explored is that push the messages in efrontend withut sending all chats from the backend
           if (player.id === socket.id) {
             // chats.pop();
+            setGuessedWord(true)
             setAllChats(prevchats=>[{sender: "you", message:`you guessed the right word! (${msg})`, rightGuess}, ...prevchats]);
           }else{
             setAllChats(prevchats=>[{sender:player.name, message:`${player.name} guessed the word right!`, rightGuess}, ...prevchats])
@@ -300,8 +317,28 @@ function PlayScreen() {
     setSelectedWord(w)
     //emit to bacikend this wordd
     socket.emit("word-select", w)
+    setWords([])
+  }
 
-    // setWords([])
+
+  const getRandomWords=()=>{
+    let lengthWordArray = getWordsArrayLength()
+    let newWordsArray = []
+    let newIndex;
+    let prevIndex = -1;
+    for(let i=0; i<3; i++){
+      newIndex = Math.floor(Math.random()*lengthWordArray)
+
+      while(newIndex===prevIndex){
+        newIndex = Math.floor(Math.random()*lengthWordArray)
+      }
+      newWordsArray.push(wordsArray[newIndex])
+      prevIndex=newIndex
+
+    }
+    console.log(newWordsArray)
+    return newWordsArray
+
   }
 
   return (
@@ -359,7 +396,7 @@ function PlayScreen() {
               placeholder="Type your guess here"
               className={`min-w-full active max-w-full text-black flex flex-wrap px-6 py-2 rounded-lg font-medium bg-sky-50  bg-opacity-40 border border-blue-300 placeholder-gray-400 text-md focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-0 focus:shadow-[0_0px_10px_2px_#bfdbfe] ${currentUserDrawing || showWords || !gameStarted?"cursor-not-allowed":""}`}
               onChange={(e) => handleChangeText(e)}
-              disabled={currentUserDrawing || showWords || !gameStarted}
+              disabled={currentUserDrawing || showWords || !gameStarted|| guessedWord}
             ></input>
           </form>
 

@@ -15,6 +15,21 @@ const io = new Server(server, {
 });
 const port = 3001;
 
+app.use(cors());
+app.use(express.json());  
+
+
+// app.get("/", (req, res) => {
+//     res.send("The api is running seccessfully");
+//   });
+
+
+
+server.listen(port, () => {
+  console.log(`Example app listening on port 3001`);
+});
+
+
 
 const chats = [];
 const players = [];
@@ -22,6 +37,7 @@ let word;
 let drawerindex = 0;
 let timeout;
 let round=0;
+let playerGuessedRightWord=[]
 
 
 const startGame=()=>{
@@ -62,6 +78,7 @@ const startDraw = ()=>{
 
 const endTurn=()=>{
   io.emit("end-turn", players[drawerindex])
+  playerGuessedRightWord=[]
   clearInterval(timeout)
   //notify turn ended for this user
   drawerindex=(drawerindex+1)%players.length
@@ -69,12 +86,9 @@ const endTurn=()=>{
   startTurn(drawerindex)
 }
 
-app.use(cors());
-app.use(express.json());
 
-// app.get("/", (req, res) => {
-//     res.send("The api is running seccessfully");
-//   });
+
+
 
 io.on("connection", (socket) => {
   console.log("connected to socket.io");
@@ -115,6 +129,7 @@ io.on("connection", (socket) => {
     if (word && inputMessage && inputMessage === word) {
       console.log("right guess");
       rightGuess=true;
+      
       if (index > -1) {
           players[index].points+=100
       }
@@ -131,6 +146,20 @@ io.on("connection", (socket) => {
         players: players
     }
     io.emit("recieve-chat", returnObject);
+
+    if(rightGuess){
+      let u = playerGuessedRightWord.filter(pla=>pla===userID)
+      console.log("u",u)
+      if(u.length==0){
+        playerGuessedRightWord.push(userID)
+        if(playerGuessedRightWord.length===players.length-1){
+          //emit to frontend for pause timer
+          io.emit("all-guessed-correct",{})
+          playerGuessedRightWord=[]
+          endTurn()
+        }
+      }
+    }
   });
 
 
@@ -162,6 +191,3 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(port, () => {
-  console.log(`Example app listening on port 3001`);
-});
