@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import './AvatarChanger.css'
-import { createAvatar } from '@dicebear/core';
+/*import { createAvatar } from '@dicebear/core';
 import { openPeeps, adventurer, avataaars, bigEars, bigSmile,
     bottts, croodles, funEmoji, lorelei, loreleiNeutral, micah,
     miniavs, notionists, personas, 
- } from '@dicebear/collection';
+ } from '@dicebear/collection';*/
 
-function AvatarChanger() {
-  const [avatar, setAvatar] = useState(() => generateAvatar()); // Initialize avatar state with a default value
+function AvatarChanger({avatar,setAvatar,generateAvatar,changeAvatar}) {
+  
+  /*const [avatar, setAvatar] = useState(() => generateAvatar()); // Initialize avatar state with a default value
 
   const changeAvatar = () => {
     setAvatar(generateAvatar()); // Generate a new avatar when the button is clicked
@@ -36,8 +37,8 @@ function AvatarChanger() {
 
     // Combine the Base64 string with the data URI prefix
     return `data:image/svg+xml;base64,${base64String}`;
-  }
-
+  }*/
+  
   return (
         <div className="avatar-container">
           <button className="arrow-button-changer" onClick={changeAvatar}>←</button>
