@@ -3,7 +3,6 @@ const cors = require("cors");
 const app = express();
 const http = require("http");
 const { Server } = require("socket.io");
-const { time } = require("console");
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -19,7 +18,7 @@ const port = 3001;
 
 const chats = [];
 const players = [];
-const word = "car";
+let word;
 let drawerindex = 0;
 let timeout;
 let round=0;
@@ -49,9 +48,15 @@ const startTurn=()=>{
   //notify frontend for starting turn with this user
   io.emit("start-turn",players[drawerindex])
   //word genrator
+
+
+}
+
+const startDraw = ()=>{
+  io.emit("start-draw",players[drawerindex])
   timeout = setTimeout(()=>{
     endTurn()
-  }, 10000)
+  }, 60000)
 
 }
 
@@ -78,11 +83,21 @@ io.on("connection", (socket) => {
 
   // socket.on("player-joined",(id)=>{
   console.log("player joined with id", socket.id);
-  players.push(socket.id);
+  let newUser = {
+    id: socket.id,
+    name: "user",
+    points: 0,
+    avatar: ""
+  }
+  players.push(newUser);
+  console.log(players)
   io.emit("updated-players", players);
   // })
   if(players.length==2){
     startGame()
+  }
+  if(players.length>=2){
+    io.emit("game-already-started",{})
   }
 
   socket.on("sending", (data) => {
@@ -95,10 +110,14 @@ io.on("connection", (socket) => {
     const userID = socket.client.sockets.keys().next().value;
     console.log(userID);
     console.log("chat recieved", inputMessage);
+    const index = players.findIndex(play => play.id === userID);
     let rightGuess= false;
-    if (inputMessage === word) {
+    if (word && inputMessage && inputMessage === word) {
       console.log("right guess");
       rightGuess=true;
+      if (index > -1) {
+          players[index].points+=100
+      }
       chats.push(`${userID} Guessed the right word`)
       // io.to(userID).emit("right-guess")
     }
@@ -107,18 +126,30 @@ io.on("connection", (socket) => {
     }
     let returnObject={
         msg: inputMessage,
-        userID: userID,
-        rightGuess: rightGuess
+        player: players[index],
+        rightGuess: rightGuess,
+        players: players
     }
     io.emit("recieve-chat", returnObject);
   });
+
+
+  socket.on("word-select",(w)=>{
+    word=w
+    let wl=w.length
+    io.emit("word-len", wl)
+    startDraw()
+
+
+  })
 
   socket.on("disconnect", (reason) => {
     // socket.leave(socket.id);
     // socket.disconnect();
     //   console.log(socket.id);
     console.log("USER DISCONNECTED IN DISCONNECT", socket.id);
-    const index = players.indexOf(socket.id);
+    const index = players.findIndex(play => play.id === socket.id);
+    console.log(index)
     if (index > -1) {
       // only splice array when item is found
       players.splice(index, 1); // 2nd parameter means remove one item only

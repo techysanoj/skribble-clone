@@ -24,7 +24,7 @@ const UrgeWithPleasureComponent = () => (
   </CountdownCircleTimer>
 );
 
-const WordBar = ({ showClock }) => {
+const WordBar = ({ showClock, wordLen, gameStarted, showWords, currentUserDrawing, selectedWord }) => {
   const [key, setKey] = useState(0);
 
   const handleClockClick = () => {
@@ -38,17 +38,19 @@ const WordBar = ({ showClock }) => {
   };
 
   return (
+    
+
     <div
       style={{
         width: '40vw', // 40% of the viewport width
-        height: '100px', // Set the desired height
+        height: '90px', // Set the desired height
         margin: 'auto', // Center the box horizontally
         border: '2px solid black', // Blue border
         display: 'flex',
         justifyContent: 'space-between', // Space between items
         alignItems: 'center',
         padding: '10px', // Add padding of 10px
-        marginTop: '100px',
+        // marginTop: '100px',
         position: 'relative', // Add position relative to align settings icon
         backgroundColor: '#f4faca' // Set the background color
       }}
@@ -76,10 +78,17 @@ const WordBar = ({ showClock }) => {
         fontWeight: 'bold', // Make the text bold
         fontSize: '24px' // Set the font size
       }}>
-        <div style={{ fontWeight: 'bold', fontSize: '24px', fontFamily: 'Comic Sans MS', color: '#000' }}>GUESS THIS</div>
-        {/* Text "GUESS THIS" */}
-        <div style={{ fontWeight: 'bold', fontSize: '24px', fontFamily: 'Comic Sans MS', color: '#000' }}>_ _ _ _</div>
-        {/* Empty spaces with underline */}
+
+        {!gameStarted && 
+        <div style={{fontWeight: 'bold', fontSize: '24px', fontFamily: 'Comic Sans MS', color: '#000' }}>GAME NOT STARTED</div>
+      }
+      {gameStarted &&
+      <>
+        <div style={{ fontWeight: 'bold', fontSize: '24px', fontFamily: 'Comic Sans MS', color: '#000' }}>{`${currentUserDrawing?"Draw":showWords?"Choosing":"GUESS THIS"}`}</div>
+
+        <div style={{ fontWeight: 'bold', fontSize: '24px', fontFamily: 'Comic Sans MS', color: '#000' }}>{`${currentUserDrawing && selectedWord?selectedWord:showWords?"":"_ ".repeat(wordLen)}`}</div>
+        </>
+        }
       </div>
       {/* Clock icon */}
       <div style={{ flex: 1 }} /> {/* Empty div to push settings icon to the right */}
