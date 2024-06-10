@@ -1,51 +1,39 @@
+// HomeScreen.jsx
 import React, { useState } from "react";
 import "../App.css";
 import AvatarChanger from "../components/AvatarChanger";
 import Footer from "../components/Footer";
 import { createAvatar } from '@dicebear/core';
-import { openPeeps, adventurer, avataaars, bigEars, bigSmile,
-    bottts, croodles, funEmoji, lorelei, loreleiNeutral, micah,
-    miniavs, notionists, personas, 
- } from '@dicebear/collection';
+import { openPeeps, adventurer, avataaars, bigEars, bigSmile, bottts, croodles, funEmoji, lorelei, loreleiNeutral, micah, miniavs, notionists, personas } from '@dicebear/collection';
+import { useNavigate } from 'react-router-dom';
 
-function HomeScreen() {
-  // State variables to store user data
+const HomeScreen = () => {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [language, setLanguage] = useState("en");
-  //const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar] = useState(() => generateAvatar());
   const [roomCode, setRoomCode] = useState("");
-  
-    const [avatar, setAvatar] = useState(() => generateAvatar()); // Initialize avatar state with a default value
-  
-    const changeAvatar = () => {
-      setAvatar(generateAvatar()); // Generate a new avatar when the button is clicked
-    };
-  
-    // Function to generate a random avatar from the available collections
-    function generateAvatar() {
-      // Define an array of collections
-      const collections = [
-        openPeeps, adventurer, avataaars, bigEars, bigSmile,
-        bottts, croodles, funEmoji, lorelei, loreleiNeutral, micah,
-        miniavs, notionists, personas
-      ];
-  
-      // Randomly select a collection
-      const selectedCollection = collections[Math.floor(Math.random() * collections.length)];
-  
-      // Use createAvatar to generate an avatar with the selected collection and desired options
-      const avatarSvg = createAvatar(selectedCollection, {
-        seed: Math.random().toString(), // Use a random seed to generate different avatars each time
-        size: 128,
-      });
-  
-      // Convert the SVG to a Base64 string using encodeURIComponent
-      const base64String = btoa(unescape(encodeURIComponent(avatarSvg)));
-  
-      // Combine the Base64 string with the data URI prefix
-      return `data:image/svg+xml;base64,${base64String}`;
-    }
-  // Handler functions to update state
+
+  function generateAvatar() {
+    const collections = [
+      openPeeps, adventurer, avataaars, bigEars, bigSmile,
+      bottts, croodles, funEmoji, lorelei, loreleiNeutral, micah,
+      miniavs, notionists, personas
+    ];
+    const selectedCollection = collections[Math.floor(Math.random() * collections.length)];
+    const avatarSvg = createAvatar(selectedCollection, {
+      seed: Math.random().toString(),
+      size: 128,
+    });
+    const base64String = btoa(unescape(encodeURIComponent(avatarSvg.toString())));
+    return `data:image/svg+xml;base64,${base64String}`;
+  }
+
+  const changeAvatar = () => {
+    setAvatar(generateAvatar());
+  };
+
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
   };
@@ -53,10 +41,6 @@ function HomeScreen() {
   const handleLanguageChange = (e) => {
     setLanguage(e.target.value);
   };
-
-  /*const handleAvatarChange = (newAvatar) => {
-    setAvatar(newAvatar);
-  };*/
 
   const handleRoomCodeChange = (e) => {
     setRoomCode(e.target.value);
@@ -70,7 +54,7 @@ function HomeScreen() {
       roomCode
     };
     console.log("User Data:", userData);
-    // You can now send userData to a server or use it as needed
+    navigate('/play');
   };
 
   return (
@@ -108,6 +92,6 @@ function HomeScreen() {
       <Footer className="footer-icon" />
     </div>
   );
-}
+};
 
 export default HomeScreen;
