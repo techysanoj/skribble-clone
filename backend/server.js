@@ -19,9 +19,9 @@ app.use(cors());
 app.use(express.json());  
 
 
-// app.get("/", (req, res) => {
-//     res.send("The api is running seccessfully");
-//   });
+app.get("/", (req, res) => {
+    res.send("The api is running seccessfully");
+  });
 
 
 
@@ -97,22 +97,28 @@ io.on("connection", (socket) => {
 
   // socket.on("player-joined",(id)=>{
   console.log("player joined with id", socket.id);
-  let newUser = {
-    id: socket.id,
-    name: "user",
-    points: 0,
-    avatar: ""
-  }
-  players.push(newUser);
-  console.log(players)
-  io.emit("updated-players", players);
-  // })
-  if(players.length==2){
-    startGame()
-  }
-  if(players.length>=2){
-    io.emit("game-already-started",{})
-  }
+
+  io.to(socket.id).emit("send-user-data",{})
+
+  socket.on("recieve-user-data",({username, avatar})=>{
+    let newUser = {
+      id: socket.id,
+      name: username,
+      points: 0,
+      avatar: avatar
+    }
+    players.push(newUser);
+    console.log(players)
+    io.emit("updated-players", players);
+    // })
+    if(players.length==2){
+      startGame()
+    }
+    if(players.length>=2){
+      io.emit("game-already-started",{})
+    }
+  })
+  
 
   socket.on("sending", (data) => {
     // console.log("msg recievd",data)
@@ -126,7 +132,7 @@ io.on("connection", (socket) => {
     console.log("chat recieved", inputMessage);
     const index = players.findIndex(play => play.id === userID);
     let rightGuess= false;
-    if (word && inputMessage && inputMessage === word) {
+    if (word && inputMessage && inputMessage.toLowerCase() === word.toLowerCase()) {
       console.log("right guess");
       rightGuess=true;
       
@@ -176,6 +182,7 @@ io.on("connection", (socket) => {
     // socket.leave(socket.id);
     // socket.disconnect();
     //   console.log(socket.id);
+    console.log(reason)
     console.log("USER DISCONNECTED IN DISCONNECT", socket.id);
     const index = players.findIndex(play => play.id === socket.id);
     console.log(index)
@@ -184,10 +191,10 @@ io.on("connection", (socket) => {
       players.splice(index, 1); // 2nd parameter means remove one item only
     }
     io.emit("updated-players", players);
+    io.to(socket.id).emit("user-disconnected",{})
     if(players.length<=1){
       stopGame()
     }
-
   });
 });
 
