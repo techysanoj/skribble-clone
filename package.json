@@ -1,5 +1,10 @@
 {
   "dependencies": {
     "react-router-dom": "^6.23.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend/src/app.js",
+    "build": "npm install && npm install --prefix ./frontend && npm install --prefix ./backend && npm run build --prefix ./frontend"
   }
 }
