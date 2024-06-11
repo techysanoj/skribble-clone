@@ -3,6 +3,8 @@ const cors = require("cors");
 const app = express();
 const http = require("http");
 const { Server } = require("socket.io");
+const path = require("path");
+const dotenv = require("dotenv");
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -13,19 +15,33 @@ const io = new Server(server, {
   },
   connectionStateRecovery: {},
 });
-const port = 3001;
+// const port = 3001;
 
 app.use(cors());
 app.use(express.json());  
+dotenv.config({path:'../.env'});
 
 
-app.get("/", (req, res) => {
+
+//--------DEPLOYMENT---------
+const __dirname1 = path.resolve();
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname1, "./frontend/build")));
+  app.get("*", (req, res) => {
+    // console.log(__dirname1)
+    res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
     res.send("The api is running seccessfully");
   });
+}
+//--------DEPLOYMENT---------
 
 
+let port_no = process.env.PORT;
 
-server.listen(port, () => {
+server.listen(port_no, () => {
   console.log(`Example app listening on port 3001`);
 });
 
