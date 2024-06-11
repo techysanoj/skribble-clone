@@ -47,6 +47,10 @@ const HomeScreen = () => {
   };
 
   const handlePlayButtonClick = () => {
+    if(!username || !avatar || !language){
+      console.log("please fill in all the details")
+      return;
+    }
     const userData = {
       username,
       language,
@@ -54,7 +58,8 @@ const HomeScreen = () => {
       roomCode
     };
     console.log("User Data:", userData);
-    navigate('/play');
+    localStorage.setItem("username", username)
+    navigate('/play', { state: { username, avatar } });
   };
 
   return (

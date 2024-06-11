@@ -86,7 +86,7 @@ const WordBar = ({ showClock, wordLen, gameStarted, showWords, currentUserDrawin
       <>
         <div style={{ fontWeight: 'bold', fontSize: '24px', fontFamily: 'Comic Sans MS', color: '#000' }}>{`${currentUserDrawing?"Draw":showWords?"Choosing":"GUESS THIS"}`}</div>
 
-        <div style={{ fontWeight: 'bold', fontSize: '24px', fontFamily: 'Comic Sans MS', color: '#000' }}>{`${currentUserDrawing && selectedWord?selectedWord:showWords?"":"_ ".repeat(wordLen)}`}</div>
+        <div style={{ fontWeight: 'bold', fontSize: '24px', fontFamily: 'Comic Sans MS', color: '#000' }}>{`${currentUserDrawing && selectedWord?selectedWord.toUpperCase():showWords?"":"_ ".repeat(wordLen)}`}</div>
         </>
         }
       </div>

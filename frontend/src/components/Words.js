@@ -1,4 +1,4 @@
-const wordsArray = [
+export const wordsArray = [
   "Strawberry", "Eclipse", "Chandelier", "Ketchup", "Toothpaste", "Rainbow", "Bunk bed", "Boardgame", "Beehive", "Lemon",
   "Wreath", "Waffles", "Bubble", "Whistle", "Snowball", "Bouquet", "Headphones", "Fireworks", "Igloo", "Ferris wheel",
   "Banana peel", "Lawnmower", "Summer", "Whisk", "Cupcake", "Sleeping bag", "Bruise", "Fog", "Crust", "Battery Paris",
@@ -56,3 +56,8 @@ const wordsArray = [
   "food", "cricket", "pencil", "TV", "rolly polly", "dolphin", "bathroom scale", "bubble", "porcupine", "owl", "stoplight",
   "chimney", "light bulb", "deer", "platypus"
 ];
+
+
+export const getWordsArrayLength=()=>{
+  return wordsArray.length
+}
