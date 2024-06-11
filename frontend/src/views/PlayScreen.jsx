@@ -7,7 +7,15 @@ import { wordsArray, getWordsArrayLength } from "../components/Words";
 
 function PlayScreen() {
   const canvasRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
+  const [isPainting, setIsPainting] = useState(false);
+  const [mousePosition, setMousePosition] = useState(undefined);
+  const [color, setColor] = useState('#000000'); // Default color is black
+  const [startPoint, setStartPoint] = useState(null); 
+
+  const [lines, setLines] = useState([]); // Array to store drawn lines
+  const [straightLineMode, setStraightLineMode] = useState(false); // Straight line drawing mode
+  const [radius, setRadius] = useState(5); // Default radius is 5
+  const [isEraser, setIsEraser] = useState(false); // Default is drawing mode
   const [context, setContext] = useState(null);
   const [inputMessage, setInputMessage] = useState("");
   const [allChats, setAllChats] = useState([]);
@@ -40,7 +48,7 @@ function PlayScreen() {
       });
     }
   }, [socket]);
-
+  
   useEffect(() => {
     if (socket) {
       //  socket.on("drawing", ({ x0, y0, x1, y1, color })=>{
@@ -94,10 +102,18 @@ function PlayScreen() {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    ctx.lineWidth = 10;
+    
     setContext(ctx);
   }, []);
 
+  useEffect(() => {   
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctx.lineCap = 'round';
+    ctx.lineWidth = radius; // Set initial radius
+    ctx.strokeStyle = color; // Set initial color
+    setContext(ctx);
+  }, [color, radius]);
   useEffect(()=>{
     if(socket){
     socket.on("game-start",()=>{
@@ -134,7 +150,7 @@ function PlayScreen() {
       socket.on("start-turn",(player)=>{
         console.log("turn started of", player)
         setGuessedWord(false)
-        clearCanvas()
+        clearCanvasAfterTurn()    // setPlayerDrawing(player)
         setPlayerDrawing(player)
         //getwiords function call
         let newRandomWords = getRandomWords()
@@ -163,7 +179,7 @@ function PlayScreen() {
       console.log("drawing started of", player)
       setShowWords(false)
       setShowClock(true)
-      clearCanvas()
+      clearCanvasAfterTurn()    // setPlayerDrawing(player)
       // setPlayerDrawing(player)
       if(player.id===socket.id){
         console.log("your turn started")
@@ -246,49 +262,165 @@ function PlayScreen() {
   //     }
   // },[socket])
 
-  const putpoint = async (event) => {
-    if (!isDrawing || !currentUserDrawing) return;
-    const { offsetX, offsetY } = event.nativeEvent;
-    context.lineTo(offsetX, offsetY);
-    context.stroke();
-    context.beginPath();
-    context.arc(offsetX, offsetY, 5, 0, Math.PI * 2);
-    context.fill();
-    context.beginPath();
-    context.moveTo(offsetX, offsetY);
-    // socket.emit("sending",{x:offsetX, y:offsetY})
+  const startPaint = (event) => {
+    if (!currentUserDrawing) return;
+
+    const coordinates = getCoordinates(event);
+    console.log(context);
+    if (coordinates) {
+      setIsPainting(true);
+      setMousePosition(coordinates);
+      if (straightLineMode) {
+        setStartPoint(coordinates);
+      }
+    }
+  };
+
+  const paint = (event) => {
+    if (!isPainting || straightLineMode) {
+      return;
+    }
+    const newMousePosition = getCoordinates(event);
+    if (mousePosition && newMousePosition) {
+      if (isEraser) {
+        eraseLine(newMousePosition);
+      } else {
+        drawLine(newMousePosition);
+      }
+      setMousePosition(newMousePosition);
+    }
+  };
+  
+  
+
+  
+  const exitPaint = () => {
+    setIsPainting(false);
+    setMousePosition(undefined);
+    setStartPoint(null);
+  };
+
+  const getCoordinates = (event) => {
+    // const canvas = canvasRef.current;
+    return {
+      x: event.pageX - canvasRef.current.offsetLeft,
+      y: event.pageY - canvasRef.current.offsetTop,
+    };
+  };
+
+  const drawLine = async(position) => {
+    // const canvas = canvasRef.current;
+    // const context = canvas.getContext('2d');
+    // if (context) {
+      context.strokeStyle = color; // Set the stroke style to the current color
+      context.beginPath(); // Start a new path for each line segment
+      context.moveTo(mousePosition.x, mousePosition.y);
+      context.lineTo(position.x, position.y);
+      context.lineWidth = radius;
+
+      context.stroke();
+      const dataURL = await canvasRef.current.toDataURL("image/png");
+      socket.emit("sending", dataURL);  
+      const newLines = [...lines, { start: mousePosition, end: position, color, radius }];
+      setLines(newLines);
+      setMousePosition(position); // Update mouse position
+    // }
+  };
+  const handleMouseUp = (event) => {
+    if (straightLineMode && startPoint) {
+      drawStraightLine(event);
+    }
+    exitPaint();
+  };
+
+  const drawStraightLine = async(event) => {
+    // const canvas = canvasRef.current;
+    // const context = canvas.getContext('2d');
+  
+    // Handle potential errors (optional)
+    // if (!canvas || !context) {
+    //   console.error('Canvas or context unavailable for drawing line.');
+    //   return;
+    // }
+  
+    // Check if straight line mode is enabled and startPoint is set
+    if (straightLineMode && startPoint) {
+      const endPoint = getCoordinates(event); // Get release coordinates
+  
+      context.strokeStyle = color;
+      context.lineWidth = radius;
+      context.beginPath();
+      context.moveTo(startPoint.x, startPoint.y);
+      context.lineTo(endPoint.x, endPoint.y);
+      context.stroke();
+  
+      const dataURL = await canvasRef.current.toDataURL("image/png");
+      socket.emit("sending", dataURL);    
+      // Reset startPoint for next straight line
+      setStartPoint(null);
+    }
+  };
+  const eraseLine = async(position) => {
+    // const canvas = canvasRef.current;
+    // const context = canvas.getContext('2d');
+    // if (context) {
+      const imageData = context.getImageData(position.x - radius, position.y - radius, 2 * radius, 2 * radius);
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        // Set alpha channel to 0 to erase
+        data[i + 3] = 0;
+      }
+      context.putImageData(imageData, position.x - radius, position.y - radius);
+  
+      const dataURL = await canvasRef.current.toDataURL("image/png");
+      socket.emit("sending", dataURL);    
+      const newLines = lines.filter(line => {
+        const startX = Math.min(line.start.x, line.end.x) - radius;
+        const endX = Math.max(line.start.x, line.end.x) + radius;
+        const startY = Math.min(line.start.y, line.end.y) - radius;
+        const endY = Math.max(line.start.y, line.end.y) + radius;
+        return position.x < startX || position.x > endX || position.y < startY || position.y > endY;
+      });
+      setLines(newLines);
+    // }
+  };
+  const fillCanvas = async() => {
+    // const canvas = canvasRef.current;
+    // if (!canvas) {
+    //     console.error('Canvas element not found.');
+    //     return;
+    // }
+
+    // const context = canvas.getContext('2d');
+    // if (!context) {
+    //     console.error('Canvas context not available.');
+    //     return;
+    // }
+    if (!currentUserDrawing) return;
+
+    context.fillStyle = color; // Set the fill color to the current color
+    context.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height); // Fill the entire canvas
     const dataURL = await canvasRef.current.toDataURL("image/png");
-    socket.emit("sending", dataURL);
-  };
+    socket.emit("sending", dataURL);  };
 
-  const startDrawing = (event) => {
-    // console.log(event)
-    setIsDrawing(true);
-    // const { offsetX, offsetY } = event.nativeEvent;
-    // context.beginPath();
-    // context.moveTo(offsetX, offsetY);
-    // context.lineTo(offsetX, offsetY);
-    putpoint(event);
-  };
 
-  const draw = (event) => {
-    if (!isDrawing) return;
-    const { offsetX, offsetY } = event.nativeEvent;
-    // const { x, y } = event.nativeEvent;
-    // drawLine(context, x, y, offsetX, offsetY, '#000000', true);
-    // context.moveTo(offsetX, offsetY);
-    context.lineTo(offsetX, offsetY);
-    context.stroke();
+const clearCanvas = async() => {
+    // const canvas = canvasRef.current;
+    // const context = canvas.getContext('2d');
+    // if (context) {
+      if (!currentUserDrawing) return;
 
-    // socket.emit("sending",{x:offsetX, y:offsetY})
-  };
+        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        setLines([]);
+        const dataURL = await canvasRef.current.toDataURL("image/png");
+        socket.emit("sending", dataURL);      
+};
 
-  const stopDrawing = () => {
-    setIsDrawing(false);
-    // context.closePath();
-    context.beginPath();
-  };
-
+const clearCanvasAfterTurn = ()=>{
+  if(context){
+    context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+  }
+}
   const handleChangeText=(e)=>{
     setInputMessage(e.target.value)
 
@@ -306,11 +438,6 @@ function PlayScreen() {
   }
 
 
-  const clearCanvas = ()=>{
-    if(context){
-      context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
-    }
-  }
 
   const handleWorSelect=(w)=>{
     setShowWords(false)
@@ -340,76 +467,151 @@ function PlayScreen() {
     return newWordsArray
 
   }
+  const basicColors = ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#C0C0C0', '#808080', '#FFFFFF'];
 
   return (
-    // <div>PlayScreen</div>
-    <div className=" relative w-screen h-screen ">
-      <div className="w-full h-full   flex flex-col  justify-center items-center gap-4">
+    <div className="relative w-screen h-screen">
+      <div className="w-full h-full flex flex-col justify-center items-center gap-4">
         <div>
-        <WordBar showClock={showClock} wordLen={wordLen} gameStarted={gameStarted} showWords={showWords} currentUserDrawing={currentUserDrawing} selectedWord={selectedWord} />
-        </div>
-        <div className=" w-full flex justify-center items-center gap-10">
-        <div className=" w-[300px] h-[540px] border border-black bg-white text-black  ">
-          {allPlayers && allPlayers.map((pl,idx)=>(
-            // <p key={idx}>{pl}</p>
-            <PlayerCard key={idx} pl={pl} curruser={pl.id===socket.id} playerDrawing={playerDrawing} />
-          ))}
-        </div>
-        <div className="relative w-[680px] h-[540px] bg-yellow-50">
-          <canvas
-            ref={canvasRef}
-            width={680}
-            height={540}
-            style={{ border: "1px solid #000" }}
-            onMouseDown={startDrawing}
-            onMouseMove={putpoint}
-            onMouseUp={stopDrawing}
-            onMouseLeave={stopDrawing}
-            className={`${!currentUserDrawing?"cursor-not-allowed":""}`}
+          <WordBar
+            showClock={showClock}
+            wordLen={wordLen}
+            gameStarted={gameStarted}
+            showWords={showWords}
+            currentUserDrawing={currentUserDrawing}
+            selectedWord={selectedWord}
           />
-          { showWords && playerDrawing && playerDrawing.id===socket.id &&
-          <div className="absolute top-0 left-0 h-full w-full flex justify-center gap-10 items-center z-10 bg-white bg-opacity-80">
-            {words.map((w,idx)=>(
-              <div onClick={()=>{handleWorSelect(w)}} key={idx} className=" text-black text-center w-36 h-7 border-2 rounded-md border-black">{w}</div>
+        </div>
+        <div className="w-full flex justify-center items-center gap-10">
+          <div className="w-[300px] h-[540px] border border-black bg-white text-black">
+            {allPlayers &&
+              allPlayers.map((pl, idx) => (
+                <PlayerCard
+                  key={idx}
+                  pl={pl}
+                  curruser={pl.id === socket.id}
+                  playerDrawing={playerDrawing}
+                />
+              ))}
+          </div>
+          <div className="w-[680px] h-[540px] ">
+            <canvas
+              ref={canvasRef}
+              width={680}
+              height={540}
+              onMouseDown={startPaint}
+              onMouseMove={paint}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={exitPaint}
+              className={`${!currentUserDrawing ? "cursor-not-allowed" : ""}`}
+              style={{ border: "1px solid #000", backgroundColor: "white" }}
+            />
+            <div>
+              {showWords && playerDrawing && playerDrawing.id === socket.id && (
+                <div className="absolute top-0 left-0 h-full w-full flex justify-center gap-10 items-center z-10 bg-white bg-opacity-80">
+                  {words.map((w, idx) => (
+                    <div onClick={() => handleWorSelect(w)} key={idx} className="text-black text-center w-36 h-7 border-2 rounded-md border-black">{w}</div>
+                  ))}
+                </div>
+              )}
+              {showWords && playerDrawing && playerDrawing.id !== socket.id && (
+                <div className="text-black absolute h-full w-full top-0 left-0 flex justify-center items-center z-10 bg-white bg-opacity-80">
+                  {`${playerDrawing.name} is choosing a word`}
+                </div>
+              )}
+            </div>
+           
+          </div>
+          <div className="w-[300px] h-[540px] border border-black flex flex-col-reverse rounded-b-lg p-1">
+            <form
+              onSubmit={(e) => {
+                handleSubmitForm(e);
+              }}
+            >
+              <input
+                value={inputMessage}
+                placeholder="Type your guess here"
+                className={`min-w-full active max-w-full text-black flex flex-wrap px-6 py-2 rounded-lg font-medium bg-sky-50 bg-opacity-40 border border-blue-300 placeholder-gray-400 text-md focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-0 focus:shadow-[0_0px_10px_2px_#bfdbfe] ${currentUserDrawing || showWords || !gameStarted ? 'cursor-not-allowed' : ''}`}
+                onChange={(e) => handleChangeText(e)}
+                disabled={currentUserDrawing || showWords || !gameStarted}
+              ></input>
+            </form>
+            {allChats && allChats.length > 0 && allChats.map((chat, idx) => (
+              <p className={`${chat.rightGuess ? 'bg-green-200 text-green-600' : ''}`} key={idx}>
+                {chat.rightGuess ? chat.message : `${chat.sender}: ${chat.message}`}
+              </p>
             ))}
-
           </div>
-}
-
-{ showWords && playerDrawing && playerDrawing.id!==socket.id &&
-          <div className=" text-black absolute h-full w-full top-0 left-0 flex justify-center items-center z-10 bg-white bg-opacity-80">
-            {`${playerDrawing.name} is choosing a word`}
-          </div>
-}
-
         </div>
-        <div className=" w-[300px] h-[540px] border border-black flex flex-col-reverse rounded-b-lg p-1 ">
-
-        <form
-        // className=" m-1"
-            onSubmit={(e) => {
-              handleSubmitForm(e);
+        {currentUserDrawing &&
+        <>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+              {basicColors.map((c, index) => (
+                <button
+                  key={index}
+                  style={{
+                    backgroundColor: c,
+                    width: '40px',
+                    height: '40px',
+                    margin: '0 5px',
+                    border: '2px solid #333',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.3s ease',
+                    outline: 'none',
+                    boxShadow: '3px 3px 5px rgba(0, 0, 0, 0.1)',
+                    transition: 'transform 0.3s',
+                  }}
+                  onClick={() => setColor(c)}
+                  onMouseEnter={(e) => e.target.style.borderColor = '#FFA500'}
+                  onMouseLeave={(e) => e.target.style.borderColor = '#333'}
+                  className="zoom-btn"
+                />
+              ))}
+            </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+          <button className="zoom-btn" style={{ backgroundColor: 'black', padding: '8px 20px', margin: '0 10px', border: '2px solid black', borderRadius: '10px', fontFamily: 'Comic Sans MS', fontSize: '18px', fontWeight: 'bold', color: 'white', cursor: 'pointer' }} onClick={() => setIsEraser(!isEraser)}>
+            {isEraser ? 'Draw' : 'Eraser'}
+          </button>
+          <button className="zoom-btn" style={{ backgroundColor: 'black', padding: '8px 20px', margin: '0 10px', border: '2px solid black', borderRadius: '10px', fontFamily: 'Comic Sans MS', fontSize: '18px', fontWeight: 'bold', color: 'white', cursor: 'pointer' }} onClick={() => setStraightLineMode(!straightLineMode)}>
+            {straightLineMode ? 'Disable Straight Line' : 'Enable Straight Line'}
+          </button>
+          <button className="zoom-btn" style={{ backgroundColor: 'black', padding: '8px 20px', margin: '0 10px', border: '2px solid black', borderRadius: '10px', fontFamily: 'Comic Sans MS', fontSize: '18px', fontWeight: 'bold', color: 'white', cursor: 'pointer' }} onClick={fillCanvas}>Fill Canvas</button>
+          <input
+            type="color"
+            value={color}
+            onChange={(e) => {
+              if (e.target.value !== color) {
+                setColor(e.target.value);
+              }
             }}
-          >
-            <input
-              value={inputMessage}
-              placeholder="Type your guess here"
-              className={`min-w-full active max-w-full text-black flex flex-wrap px-6 py-2 rounded-lg font-medium bg-sky-50  bg-opacity-40 border border-blue-300 placeholder-gray-400 text-md focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-0 focus:shadow-[0_0px_10px_2px_#bfdbfe] ${currentUserDrawing || showWords || !gameStarted?"cursor-not-allowed":""}`}
-              onChange={(e) => handleChangeText(e)}
-              disabled={currentUserDrawing || showWords || !gameStarted|| guessedWord}
-            ></input>
-          </form>
+            style={{ marginLeft: '10px', marginRight: '10px' }}
+          />
+          <label>Radius:</label>
+          <input
+  type="range"
+  min="1"
+  max="100"
+  value={radius}
+  onChange={(e) => setRadius(parseInt(e.target.value))}
+  style={{ marginLeft: '5px', marginRight: '10px' }}
+/>
 
-          {allChats && allChats.length>0 && allChats.map((chat, idx) => <p className={`${chat.rightGuess?"bg-green-200 text-green-600":""}`} key={idx}>{
-            `${chat.rightGuess?chat.message:`${chat.sender}: ${chat.message}`}`
-          // `${chat.sender}: ${chat.message}`
-        // chat
-          }</p>)}
+          <button className="zoom-btn" style={{ padding: '8px 20px', margin: '0 10px', border: '2px solid black', borderRadius: '10px', fontFamily: 'Comic Sans MS', fontSize: '18px', fontWeight: 'bold', color: 'white', cursor: 'pointer' }} onClick={clearCanvas}>Clear</button>
+
         </div>
-        </div>
+        </>}
       </div>
+
     </div>
   );
+  
+  
+  
 }
 
 export default PlayScreen;
+
+
+// className={`${!currentUserDrawing?"cursor-not-allowed":""}`}
+// 
