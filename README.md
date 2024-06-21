@@ -111,9 +111,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 If you have any questions or suggestions, feel free to reach out to the project maintainers:
 
-- **Your Name** - [your-email@example.com](mailto:your-email@example.com)
-- GitHub: [your-username](https://github.com/your-username)
+- **Your Name** - [panditsanoj124@gmail.com](mailto:panditsanoj124@gmail.com)
+- GitHub: [techysanoj](https://github.com/techysanoj)
 
 ---
 
-Thank you for visiting **Skribblay**! We hope you enjoy playing and contributing to the project.
+Thank you for visiting **Skribblay.you**! We hope you enjoy playing and contributing to the project.
