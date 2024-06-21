@@ -1,4 +1,4 @@
-# Skribblay - A Clone of Skribbl.io
+# Skribblay.you - A Clone of Skribbl.io
 
 Welcome to **Skribblay**, a fun and engaging online multiplayer drawing and guessing game inspired by Skribbl.io. This project aims to replicate the core functionalities of the original game, providing an entertaining platform where players can showcase their drawing skills and guess the drawings of others.
 
@@ -39,7 +39,7 @@ To get a local copy up and running, follow these steps:
 1. **Clone the repository:**
 
     ```sh
-    git clone https://github.com/your-username/skribble-clone.git
+    git clone https://github.com/techysanoj/skribble-clone.git
     cd skribble-clone
     ```
 
