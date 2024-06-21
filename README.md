@@ -26,10 +26,10 @@ Welcome to **Skribblay**, a fun and engaging online multiplayer drawing and gues
 ![Game Lobby](frontend/public/homescreen.png)
 *Game Lobby*
 
-![Drawing Interface](frontend/public/drawing.png)
+![Drawing Interface](frontend/public/drawscree.png)
 *Drawing Interface*
 
-![Guessing Phase](screenshots/guessing.png)
+![Guessing Phase](screenshots/palyscreen.png)
 *Guessing Phase*
 
 ## Installation
