@@ -115,7 +115,7 @@ If you have any questions or suggestions, feel free to reach out to the project 
 - GitHub: [techysanoj](https://github.com/techysanoj)
 - Shashwat Bindal - shashwat.bindal2002@gmail.com
 - GitHub: [shashwat282002](https://github.com/shashwat282002)
-- Priyanshu Bhardwaj - priyanshu_bhardwaj70@gmail.com
+- Priyanshu Bhardwaj - priyanshubhardwaj70@gmail.com
 - GitHub: [PriyanshuA1507](https://github.com/PriyanshuA1507)
 ---
 
