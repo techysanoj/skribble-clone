@@ -113,6 +113,8 @@ If you have any questions or suggestions, feel free to reach out to the project 
 
 - **Your Name** - [panditsanoj124@gmail.com](mailto:panditsanoj124@gmail.com)
 - GitHub: [techysanoj](https://github.com/techysanoj)
+- Shashwat Bindal - shashwat.bindal2002@gmail.com
+- GitHub: [shashwat282002](https://github.com/shashwat282002)
 
 ---
 
