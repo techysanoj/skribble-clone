@@ -111,11 +111,11 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 If you have any questions or suggestions, feel free to reach out to the project maintainers:
 
-- **Your Name** - [panditsanoj124@gmail.com](mailto:panditsanoj124@gmail.com)
+- **SANOJ** - [panditsanoj124@gmail.com](mailto:panditsanoj124@gmail.com)
 - GitHub: [techysanoj](https://github.com/techysanoj)
-- Shashwat Bindal - shashwat.bindal2002@gmail.com
+- **Shashwat Bindal** - shashwat.bindal2002@gmail.com
 - GitHub: [shashwat282002](https://github.com/shashwat282002)
-- Priyanshu Bhardwaj - priyanshubhardwaj70@gmail.com
+- **Priyanshu Bhardwaj** - priyanshubhardwaj70@gmail.com
 - GitHub: [PriyanshuA1507](https://github.com/PriyanshuA1507)
 ---
 
