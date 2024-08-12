@@ -117,6 +117,8 @@ If you have any questions or suggestions, feel free to reach out to the project 
 - GitHub: [shashwat282002](https://github.com/shashwat282002)
 - **Priyanshu Bhardwaj** - priyanshubhardwaj70@gmail.com
 - GitHub: [PriyanshuA1507](https://github.com/PriyanshuA1507)
+- **Shashwat Aggarwal** - shashwatagg04@gmail.com
+- GitHub: [ShashwatAgg0411](https://github.com/ShashwatAgg0411)
 ---
 
 Thank you for visiting **Skribblay.you**! We hope you enjoy playing and contributing to the project.
