@@ -120,6 +120,8 @@ If you have any questions or suggestions, feel free to reach out to the project 
 
 - **SANOJ** - [panditsanoj124@gmail.com](mailto:panditsanoj124@gmail.com)
 - GitHub: [techysanoj](https://github.com/techysanoj)
+- **Tushar Sharu** - tusharsharu2809@gmail.com
+- GitHub: [tusharsharu](https://github.com/Tusharsharu)
 - **Shashwat Bindal** - shashwat.bindal2002@gmail.com
 - GitHub: [shashwat282002](https://github.com/shashwat282002)
 - **Priyanshu Bhardwaj** - priyanshubhardwaj70@gmail.com
